@@ -29,17 +29,16 @@ router.beforeEach(async(to, from, next) => {
       NProgress.done()
     } else {
       // 确定用户是否已通过getInfo获得其权限角色
-      const hasRoles = store.getters.roles && store.getters.roles.length > 0
-      if (hasRoles) {
+      const hasName = store.getters.name !== ''
+      if (hasName) {
         next()
       } else {
         try {
           // 如果没有得到权限则再去请求后台得到用户信息及权限信息
-          const { roles } = await store.dispatch('user/getInfo')
+          await store.dispatch('user/getInfo')
 
           // 绑定动态路由【后面我们要修改】
-          const accessRoutes = await store.dispatch('permission/generateRoutes', roles)
-
+          const accessRoutes = await store.dispatch('menu/getMenus')
           // 添加动态路由到主路由
           router.addRoutes(accessRoutes)
 
